@@ -23,6 +23,7 @@ To build the Docker image, use the following command:
 
 ```bash
 docker buildx build --rm --tag yolo11 --file Dockerfile .
+```
 
 ## Running The Docker Container
 
@@ -38,6 +39,7 @@ docker run --gpus all -it \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v ~/myWork:/home/docker/myWork \
     yolo11 /bin/bash
+```
 
 ### For Windows Host
 
@@ -50,6 +52,7 @@ docker run --gpus all -it \
     -e HOME="/home/docker" \
     -v c:/!myWork:/home/docker/myWork \
     yolo11 /bin/bash
+```
 
 ## Additional Notes
 
