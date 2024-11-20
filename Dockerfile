@@ -74,6 +74,12 @@ RUN pip3 install \
 		roboflow \
 		nvitop
 
+# tilde: TUI Editor
+# bashtop: TUI Monitor Tool
+RUN apt install -y \
+                tilde \ 
+                bashtop
+
 # Create a Docker User with Sudo Privileges
 ARG USER=docker
 RUN useradd -m -s /bin/bash $USER && \
