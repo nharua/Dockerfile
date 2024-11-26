@@ -30,28 +30,26 @@ docker buildx build --rm --tag yolo11 --file Dockerfile .
 ### For Linux Host
 
 ```bash
-docker run --gpus all -it \
+docker run --gpus all -d -p 2222:22 \
     --name yolo11 \
     --hostname yolo11 \
     -e DISPLAY=$DISPLAY \
     -e TERM=xterm-256color \
-    -e HOME="/home/docker" \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v ~/myWork:/home/docker/myWork \
-    yolo11 /bin/bash
+    yolo11
 ```
 
 ### For Windows Host
 
 ```bash
-docker run --gpus all -it \
+docker run --gpus all -d -p 2222:22 \
     --name yolo11 \
     --hostname yolo11 \
     -e DISPLAY=host.docker.internal:0 \
     -e TERM=xterm-256color \
-    -e HOME="/home/docker" \
     -v c:/!myWork:/home/docker/myWork \
-    yolo11 /bin/bash
+    yolo11
 ```
 
 ## Additional Notes
@@ -93,5 +91,5 @@ The Docker image includes a comprehensive set of packages to streamline developm
 
 ## License
 
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for more details.
+This project is licensed under the **MIT License**.
 

@@ -80,31 +80,54 @@ RUN apt install -y \
                 tilde \ 
                 bashtop
 
+# install openssh-server 
+# Will remote running from other Docker
+RUN apt install -y \
+        openssh-server
+
 # Create a Docker User with Sudo Privileges
 ARG USER=docker
+ARG PASSWD=pass@123
 RUN useradd -m -s /bin/bash $USER && \
     usermod -aG sudo $USER && \
-    echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+    echo '%sudo ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers && \
+    echo "$USER:$PASSWD" | chpasswd
+
+# Configure SSH
+RUN mkdir -p /var/run/sshd && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config && \
+    sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config
 
 # Switch to Non-Root User
 USER $USER
 ENV HOME=/home/$USER
 WORKDIR /home/$USER
 
-
 # Set Python Pip Packages Cache Directory
 ENV PIP_CACHE_DIR=/home/$USER/.cache/pip
+
+# Expose SSH port
+EXPOSE 22
+
+# Switch back to root to start SSH
+# USER root
+
+# Start SSH by default
+CMD ["sudo", "/usr/sbin/sshd", "-D"]
 
 # How to build 
 # docker buildx build --rm --tag vbtech_yolo11 --file .\Dockerfile .
 
 # How to run
 # On Linux Host
-# docker run --gpus all -it --name vbtech_yolo11 --hostname yolo11 -e DISPLAY=$DISPLAY -e TERM=xterm-256color -e HOME="/home/docker" -v /tmp/.X11-unix:/tmp/.X11-unix -v ~/myWork:/home/docker/myWork vbtech_yolo11 /bin/bash
+# docker run --gpus all -d -p 2222:22 --name vbtech_yolo11 --hostname yolo11 -e DISPLAY=$DISPLAY -e TERM=xterm-256color -v /tmp/.X11-unix:/tmp/.X11-unix -v ~/myWork:/home/docker/myWork yolo11
 # On Windows Host
-# docker run --gpus all -it --name vbtech_yolo11 --hostname yolo11 -e DISPLAY=host.docker.internal:0 -e TERM=xterm-256color -e HOME="/home/docker" -v c:/!myWork:/home/docker/myWork vbtech_yolo11 /bin/bash
+# docker run --gpus all -d -p 2222:22 --name vbtech_yolo --hostname yolo11 -e DISPLAY=host.docker.internal:0 -e TERM=xterm-256color -v c:/!myWork:/home/docker/myWork yolo11
 # Run GUI with Build-in Xserver on Windows 11
 # https://www.youtube.com/watch?v=UEre6Bd75dw
+
+# Attach to docker 
+# docker exec -it vbtech_yolo /bin/bash
 
 # Run with attach laptop camera
 # docker run --gpus all -it --device /dev/video0:/dev/video0 --name vbtech_yolo11wCam --hostname yolo11 -e DISPLAY=host.docker.internal:0 -e TERM=xterm-256color -e HOME="/home/docker" -v c:/!myWork:/home/docker/myWork vbtech_yolo11 /bin/bash
